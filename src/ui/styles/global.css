@@ -1,0 +1,345 @@
+/*
+  デザイン方針:
+  - 背景は深いスレート(#0B0F14)。金融/署名UIとして「静か」で「間違いが目立つ」余白重視の画面にする。
+  - アクセントは1色(琥珀 #E8A33D)。承認・確定アクションだけに使い、他は使わない。
+  - 危険操作(送信確認・警告)は独立した赤系(#E5484D)のみを使う。
+  - Address/PublicKey/Signatureなど「照合が必要な文字列」は必ずJetBrains Mono相当の等幅フォントで表示する
+    -> 一文字の見間違いが金銭事故に直結するため、UI全体でこの区別を一貫させる。
+*/
+
+:root {
+  --bg: #0b0f14;
+  --surface: #12181f;
+  --surface-raised: #1a222b;
+  --border: #232c37;
+  --text: #e7ecf2;
+  --text-muted: #8b98a8;
+  --accent: #e8a33d;
+  --accent-text: #1a1207;
+  --danger: #e5484d;
+  --success: #3ddc84;
+
+  --font-ui: -apple-system, 'Inter', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+
+.network-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px;
+  background: var(--surface);
+}
+
+.network-toggle button {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--font-ui);
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.network-toggle button[data-active='true'] {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+.network-toggle .dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.network-toggle .dot.mainnet {
+  background: var(--success);
+}
+.network-toggle .dot.testnet {
+  background: var(--text-muted);
+}
+
+.content {
+  flex: 1;
+  padding: 24px 20px 40px;
+}
+
+h1.page-title {
+  font-size: 20px;
+  margin: 0 0 6px;
+}
+
+p.page-sub {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0 0 28px;
+  line-height: 1.6;
+}
+
+.option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font-ui);
+}
+
+.option-button:hover {
+  border-color: var(--accent);
+  background: var(--surface-raised);
+}
+
+.option-button .label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.option-button .desc {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.field textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  font-family: var(--font-ui);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-link {
+  background: transparent;
+  color: var(--text-muted);
+  text-decoration: underline;
+  padding: 8px 0;
+  width: auto;
+}
+
+.mnemonic-box {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.mnemonic-box span {
+  color: var(--text-muted);
+}
+
+.warning-banner {
+  background: rgba(229, 72, 77, 0.1);
+  border: 1px solid rgba(229, 72, 77, 0.4);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.error-banner {
+  background: rgba(229, 72, 77, 0.1);
+  border: 1px solid rgba(229, 72, 77, 0.4);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.back-link {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0 0 20px;
+}
+
+.account-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.account-card .name {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.account-card .address {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.balance-hero {
+  padding: 28px 4px 8px;
+}
+
+.balance-hero .amount {
+  font-size: 40px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+}
+
+.balance-hero .symbol {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+.section-title {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 28px 0 12px;
+}
+
+.asset-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.asset-row:last-child {
+  border-bottom: none;
+}
+
+.asset-row .asset-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.asset-row .asset-type {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.asset-row .asset-balance {
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
